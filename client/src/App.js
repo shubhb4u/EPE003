@@ -96,7 +96,7 @@ function App() {
           <p class="material-form__error">Please enter valid email address</p>
         </div>
         <div className="material-form__container">
-          <input className="material-form__input" type="text" name="resourceSiteCode " placeholder="Resource Site Code " value={state.resourceSiteCode} onChange={handleChange} />
+          <input className="material-form__input" type="text" name="resourceSiteCode" placeholder="Resource Site Code " value={state.resourceSiteCode} onChange={handleChange} />
           <div class="material-form__focus-animation"></div>
         </div>
         <div className="material-form__container">
