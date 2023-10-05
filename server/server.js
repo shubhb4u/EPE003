@@ -4,16 +4,16 @@ const morgan = require('morgan');
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 27020;
+const PORT = process.env.PORT || 5004 ;
 
 const routes = require('./routes/api');
 
 // <username> and <password> have to be changed to an actual mongodb username and password, I won't give my own out so people
 // don't just have acess to my database to go and change things there, but you can simply create your own mongodb database->
 // -> put your own link in here, and ur own username and password + u gotta change the url on line 16
-const MONGODB_URI = 'mongodb+srv://shubhammazumdar94:shubhammazumdar94@epeteam2.uuvz2cr.mongodb.net/?retryWrites=true&w=majority';
+const MONGODB_URI = `mongodb+srv://shubhb4umazumdar:shubhb4umazumdar@epeauthentication.ldon4cj.mongodb.net/?retryWrites=true&w=majority`;
 
-mongoose.connect(MONGODB_URI || 'mongodb://localhost:27020/jakubhalik-mern-submit-form-db', {
+mongoose.connect(MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
@@ -32,4 +32,6 @@ if(process.env.NODE_ENV === 'production') {
 app.use(morgan('tiny'));
 app.use('/api', routes);
 
-app.listen(PORT, console.log(`Server is starting at ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`Server is starting at ${PORT}`);
+});

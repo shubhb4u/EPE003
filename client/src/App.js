@@ -2,18 +2,20 @@ import React, { useState, useEffect } from 'react';
 import './App.scss';
 import axios from 'axios';
 import Header from './components/Header.js';
-
+import List from './components/List.js'
 
 function App() {
-  const [state, setState] = useState ({
-    name: '',
-    email: '',
-    resourceSiteName:'',
-    resourceSiteCode:'',
-    county:'',
-    totalNumberOfInverters:'',
-    desiredEnergizationDate: ''
-  });
+  const [todo, setTodo] = useState({
+      name: '',
+      email: '',
+      resourceSiteCode: '',
+      resourceSiteName: '',
+      county: '',
+      desiredEnergizationDate: '',
+      totalNumberOfInverters: ''
+  }); 
+  const [todos, setTodos] = useState([]);
+  const [editId, setEditId] = useState("");
 
   useEffect(() => {
     getSubmitForm();
@@ -21,63 +23,71 @@ function App() {
 
   const getSubmitForm = () => {
     axios.get('./api')
-    .then((response) => {
-      const data = response.data;
-      setState({ posts: data });
-      console.log('Data received');
-    })
-    .catch(() => {
-      alert('Error retrieving data');
-    });
+      .then((response) => {
+        const data = response.data;
+        setTodos(data); 
+        console.log('Data received');
+      })
+      .catch(() => {
+        alert('Error retrieving data');
+      });
   }
 
-  const handleChange = ({ target }) => {
-    const { name, value } = target;
-    setState({
-      ...state,
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setTodo((prevTodo) => ({
+      ...prevTodo,
       [name]: value
-    })
+    }));
   };
 
   const submit = (event) => {
     event.preventDefault();
-    const payload = {
-      name: state.name,
-      email: state.email,
-      resourceSiteCode: state.resourceSiteCode,
-      resourceSiteName: state.resourceSiteName,
-      county: state.county,
-      desiredEnergizationDate: state.desiredEnergizationDate,
-      totalNumberOfInverters: state.totalNumberOfInverters
-    };
-    axios({
-      url: '/api/save',
-      method: 'POST',
-      data: payload
-    })
-    .then(() => {
-      console.log('Data are on their way to the server');
+
+    if (editId !== "") {
+      // Update an existing item in the state array
+      const updatedTodos = todos.map((item, index) =>
+        index === editId ? { ...item, ...todo } : item
+      );
+      setTodos(updatedTodos);
+      setEditId("");
+      setTodo({});
+    } else {
+      // Add a new item to the state array
+      setTodos([
+        ...todos,
+        {
+          Id: `${todo.name}-${Date.now()}`,
+          ...todo,
+        },
+      ]);
       resetSubmitForm();
-      getSubmitForm();
-    })
-    .catch(() => {
-      console.log('Data got lost ups');
-    });
+    }
   };
-  
+
   const resetSubmitForm = () => {
-    setState({
+    setTodo({
       name: '',
       email: '',
-      resourceSiteCode:'',
-      resourceSiteName:'',
-      county:'',
-      desiredEnergizationDate:'',
-      totalNumberOfInverters:''
+      resourceSiteCode: '',
+      resourceSiteName: '',
+      county: '',
+      desiredEnergizationDate: '',
+      totalNumberOfInverters: ''
     });
   };
 
-  
+  const handleEdit = (id) => {
+    setEditId(id);
+    const editTodo = todos.find((item) => item.Id === id);
+    setTodo(editTodo);
+  };
+
+  const handleDelete = (id) => {
+    const updatedTodos = todos.filter((item) => item.Id !== id);
+    setTodos(updatedTodos);
+  };
+
   return (
     <>
     <div className="header">
@@ -87,38 +97,48 @@ function App() {
       
       <form className="material-form" onSubmit={submit}>
         <div className="material-form__container">
-          <input className="material-form__input" type="text" name="name" placeholder="Name" value={state.name} onChange={handleChange} />
+          <input className="material-form__input" type="text" name="name" placeholder="Name" value={todo.name} onChange={handleChange} />
           <div class="material-form__focus-animation"></div>
         </div>
         <div className="material-form__container">
-          <input className="material-form__input" type="email" name="email" placeholder="Email" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}" value={state.email} onChange={handleChange} />
+          <input className="material-form__input" type="email" name="email" placeholder="Email" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}" value={todo.email} onChange={handleChange} />
           <div class="material-form__focus-animation"></div>
           <p class="material-form__error">Please enter valid email address</p>
         </div>
         <div className="material-form__container">
-          <input className="material-form__input" type="text" name="resourceSiteCode" placeholder="Resource Site Code " value={state.resourceSiteCode} onChange={handleChange} />
+          <input className="material-form__input" type="text" name="resourceSiteCode" placeholder="Resource Site Code " value={todo.resourceSiteCode} onChange={handleChange} />
           <div class="material-form__focus-animation"></div>
         </div>
         <div className="material-form__container">
-          <input className="material-form__input" type="text" name="resourceSiteName" placeholder="Resource Site Name" value={state.resourceSiteName} onChange={handleChange} />
+          <input className="material-form__input" type="text" name="resourceSiteName" placeholder="Resource Site Name" value={todo.resourceSiteName} onChange={handleChange} />
           <div class="material-form__focus-animation"></div>
         </div>
         <div className="material-form__container">
-          <input className="material-form__input" type="text" name="county" placeholder="County" value={state.county} onChange={handleChange} />
+          <input className="material-form__input" type="text" name="county" placeholder="County" value={todo.county} onChange={handleChange} />
           <div class="material-form__focus-animation"></div>
         </div>
         <div className="material-form__container">
-          <input className="material-form__input" type="date" name="desiredEnergizationDate" placeholder="Desired Energization Date" value={state.desiredEnergizationDate} onChange={handleChange} />
+          <input className="material-form__input" type="date" name="desiredEnergizationDate" placeholder="Desired Energization Date" value={todo.desiredEnergizationDate} onChange={handleChange} />
           <div class="material-form__focus-animation"></div>
         </div>
         <div className="material-form__container">
-          <input className="material-form__input" type="number" name="totalNumberOfInverters" placeholder="Total number of Inverters" value={state.totalNumberOfInverters} onChange={handleChange} />
+          <input className="material-form__input" type="number" name="totalNumberOfInverters" placeholder="Total number of Inverters" value={todo.totalNumberOfInverters} onChange={handleChange} />
           <div class="material-form__focus-animation"></div>
         </div>
         
           <button className="material-form__button">Submit</button>
       </form>
     </div>
+    <div>
+      <ul>
+            <List 
+              list={todos}
+              handleEdit={handleEdit}
+              handleDelete={handleDelete}
+            />
+      </ul>
+    </div>
+
     </>
   );
 }
