@@ -6,6 +6,7 @@ import List from './components/List.js'
 
 function App() {
   const [todo, setTodo] = useState({
+      Id: '',
       name: '',
       email: '',
       resourceSiteCode: '',
@@ -46,8 +47,8 @@ function App() {
 
     if (editId !== "") {
       // Update an existing item in the state array
-      const updatedTodos = todos.map((item, index) =>
-        index === editId ? { ...item, ...todo } : item
+      const updatedTodos = todos.map((item) =>
+      item.Id === editId ? { ...item, ...todo } : item
       );
       setTodos(updatedTodos);
       setEditId("");
@@ -67,6 +68,7 @@ function App() {
 
   const resetSubmitForm = () => {
     setTodo({
+      Id:'',
       name: '',
       email: '',
       resourceSiteCode: '',
@@ -78,12 +80,23 @@ function App() {
   };
 
   const handleEdit = (id) => {
+    // Find the item to edit based on its Id
+  const editTodo = todos.find((item) => item.Id === id);
+
+  if (editTodo) {
+    // Set the todo state to the found item
+    setTodo({
+      ...editTodo,
+      Id: id, // Ensure that Id is set correctly
+    });
+
+    // Set the editId to the current id
     setEditId(id);
-    const editTodo = todos.find((item) => item.Id === id);
-    setTodo(editTodo);
+  }
   };
 
   const handleDelete = (id) => {
+    // console.log('clicked delete');
     const updatedTodos = todos.filter((item) => item.Id !== id);
     setTodos(updatedTodos);
   };

@@ -5,14 +5,14 @@ const List = ({handleDelete,handleEdit,list}) => {
   return (
     <div className="allTodos">
         {list.map((t) => (
-            <li className="singleTodo">
+            <li key={t.Id} className="singleTodo">
               <div className="todoText">
-              <span key={t.id}>{t.name}</span>
-              <span key={t.id}>{t.email}</span>
+                <span>{t.name}</span>
+                <span>{t.email}</span>
               </div>
               
-              <button onClick={() => handleEdit(t.id)}>Edit</button>
-              <button onClick={() => handleDelete(t.id)}>Delete</button>
+              <button onClick={() => handleEdit(t.Id)}>Edit</button>
+              <button onClick={() => handleDelete(t.Id)}>Delete</button>
             </li>
         ))}
     </div>
